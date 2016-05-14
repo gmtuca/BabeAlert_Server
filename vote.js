@@ -1,19 +1,14 @@
 var express    = require("express");
 var bodyParser = require("body-parser");
-var mysql      = require('mysql');
+var mysql      = require("mysql");
+var db_config  = require("./db_config")
 
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-var connection = mysql.createConnection({
-    host     : 'localhost',
-    port     : '3306',
-    user     : 'root',
-    password : '',
-    database : 'BabeAlertDB'
-});
+var connection = mysql.createConnection(db_config);
 
 //    /etc/init.d/mysql start
 //    mysql -u root -p
