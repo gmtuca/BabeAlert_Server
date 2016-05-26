@@ -30,43 +30,82 @@ Date.prototype.toMysqlFormat = function() {
         twoDigits(this.getUTCSeconds());
 };
 
-app.post('/vote', function (req, res) {
+app.get('/alert', function (req, res) {
+    res.statusCode = 400; //bad request
+    res.send(
+        JSON.stringify({ success: false,
+                         description: 'Endpoint should only be used for POST'}));
+});
 
-    var vote = req.body;
+app.post('/alert', function (req, res) {
 
-    if(!vote.location || !vote.location.lat || !vote.location.lon){
-        res.send('Invalid parameters');
+    res.setHeader('Content-Type', 'application/json');
+
+    var alert = req.body;
+
+    if(!alert.location || !alert.location.lat || !alert.location.lon){
+        res.statusCode = 400; //bad request
+        res.send(
+            JSON.stringify({ success: false,
+                             description: 'Invalid parameters'}));
         return;
     }
 
-    var location = vote.location;
+    var location = alert.location;
     var ip = req.connection.remoteAddress;
     var time = (new Date()).toMysqlFormat();
 
     connection.query(
         "INSERT INTO BabeVote(ip,latitude,longitude,vote_time) " +
-        "VALUES('"+ ip +"',"+location.lat+","+location.lon+",'"+time+"');"
-        , function(err, r) {
+        "VALUES(?,?,?,?);",
+        [ip, location.lat, location.lon, time],
+        function(err, r) {
             if(err || r.affectedRows < 1){
-                console.log(err);
-                res.send('Failed');
+                res.statusCode = 500; //internal server error
+                console.warn(err);
+                res.send(
+                    JSON.stringify({ success: false,
+                                     description: 'Unable to update DB'}));
+                return;
             }
-            else{
-                console.log('BABE > '+ ip + ' (' + location.lat + ', ' + location.lon + ') @ ' + time);
 
-                res.statusCode = 200;
-                res.send();
-            }
+            console.log('> '+ ip + ' (' + location.lat + ', ' + location.lon + ') @ ' + time);
+            res.statusCode = 200; // ok
+            res.send(JSON.stringify({ success: true }));
+
     });
 });
 
-var server = app.listen(8081, function () {
+app.post('/babes', function (req, res) {
+
+    res.setHeader('Content-Type', 'application/json');
+
+    //var params = req.body;
+    // TODO contain from-to on the map and preferences... not SELECT ALL
+
+    connection.query(
+        "SELECT latitude, longitude FROM BabeVote;"
+        , function(err, rows, fields) {
+            if(err){
+                res.statusCode = 500; //internal server error
+                console.warn(err);
+                res.send(
+                    JSON.stringify({ success: false,
+                                     description: 'Unable to select from DB'}));
+                return;
+            }
+
+            res.statusCode = 200;
+            res.send(JSON.stringify({ success: true, alerts:rows }));
+        });
+});
+
+var server = app.listen(8085, function () {
 
     var host = server.address().address;
     var port = server.address().port;
 
-    console.log("Example app listening at http://127.0.0.1:%s", port)
+    console.log("Listening at 127.0.0.1:%s", port)
 });
-
 
 //connection.end();
