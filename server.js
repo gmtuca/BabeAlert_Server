@@ -30,11 +30,16 @@ Date.prototype.toMysqlFormat = function() {
         twoDigits(this.getUTCSeconds());
 };
 
+app.get('/', function (req, res) {
+    res.statusCode = 200; //ok
+    res.send('Babe Alert Server is up and running!');
+});
+
 app.get('/alert', function (req, res) {
     res.statusCode = 400; //bad request
     res.send(
         JSON.stringify({ success: false,
-                         description: 'Endpoint should only be used for POST'}));
+                         description: '/alert should only be used for POST'}));
 });
 
 app.post('/alert', function (req, res) {
@@ -96,7 +101,8 @@ app.post('/babes', function (req, res) {
             }
 
             res.statusCode = 200;
-            res.send(JSON.stringify({ success: true, alerts:rows }));
+            res.send(JSON.stringify({ success: true,
+                                      alerts:rows }));
         });
 });
 
