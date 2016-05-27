@@ -61,7 +61,7 @@ app.post('/alert', function (req, res) {
     var time = (new Date()).toMysqlFormat();
 
     connection.query(
-        "INSERT INTO BabeVote(ip,latitude,longitude,vote_time) " +
+        "INSERT INTO Alert(ip,latitude,longitude,vote_time) " +
         "VALUES(?,?,?,?);",
         [ip, location.lat, location.lon, time],
         function(err, r) {
@@ -89,7 +89,7 @@ app.post('/babes', function (req, res) {
     // TODO contain from-to on the map and preferences... not SELECT ALL
 
     connection.query(
-        "SELECT latitude, longitude FROM BabeVote;"
+        "SELECT latitude, longitude FROM Alert;"
         , function(err, rows, fields) {
             if(err){
                 res.statusCode = 500; //internal server error
@@ -111,7 +111,7 @@ var server = app.listen(8085, function () {
     var host = server.address().address;
     var port = server.address().port;
 
-    console.log("Listening at 127.0.0.1:%s", port)
+    console.log("Listening at %s:%s", host, port);
 });
 
 //connection.end();
