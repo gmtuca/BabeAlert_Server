@@ -1,0 +1,28 @@
+{
+  "name": "babeserver",
+  "version": "1.0.0",
+  "description": "Babe Alert Server",
+  "main": "server.js",
+  "dependencies": {
+    "mysql": "^2.10.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gmtuca/BabeAlert_Server.git"
+  },
+  "keywords": [
+    "babe",
+    "alert"
+  ],
+  "author": "Arthur Ceccotti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gmtuca/BabeAlert_Server/issues"
+  },
+  "homepage": "https://github.com/gmtuca/BabeAlert_Server#readme"
+}
