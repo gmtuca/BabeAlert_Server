@@ -3,6 +3,8 @@ var bodyParser = require("body-parser");
 var mysql      = require("mysql");
 var db_config  = require("./db_config")
 
+const env = process.env;
+
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -32,7 +34,7 @@ Date.prototype.toMysqlFormat = function() {
 
 app.get('/', function (req, res) {
     res.statusCode = 200; //ok
-    res.send('Babe Alert Server is up and running!');
+    res.send('Babe Alert server is up and running! Ready to take the babes.');
 });
 
 app.get('/alert', function (req, res) {
@@ -61,7 +63,7 @@ app.post('/alert', function (req, res) {
     var time = (new Date()).toMysqlFormat();
 
     connection.query(
-        "INSERT INTO Alert(ip,latitude,longitude,vote_time) " +
+        "INSERT INTO Alert(ip,latitude,longitude,time) " +
         "VALUES(?,?,?,?);",
         [ip, location.lat, location.lon, time],
         function(err, r) {
@@ -100,14 +102,14 @@ app.post('/babes', function (req, res) {
                 return;
             }
 
+	    console.log('Successful request for babes');
             res.statusCode = 200;
             res.send(JSON.stringify({ success: true,
                                       alerts:rows }));
         });
 });
 
-var server = app.listen(8085, function () {
-
+var server = app.listen(env.NODE_PORT || 3000, env.NODE_IP || 'localhost', function () {
     var host = server.address().address;
     var port = server.address().port;
 
